@@ -159,7 +159,6 @@
         .rank.bronze { color: var(--bronze); text-shadow: 0 0 8px rgba(205, 127, 50, 0.3); }
         .rank.other { color: var(--text-muted); }
 
-        /* Profile Style Configuration */
         .player-identity {
             display: flex;
             align-items: center;
@@ -259,13 +258,13 @@
         </header>
 
         <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab(event, 'india')">India</button>
-            <button class="tab-btn" onclick="switchTab(event, 'oce')">OCE</button>
-            <button class="tab-btn" onclick="switchTab(event, 'global')">Global</button>
+            <button class="tab-btn active" id="tab-india">India</button>
+            <button class="tab-btn" id="tab-oce">OCE</button>
+            <button class="tab-btn" id="tab-global">Global</button>
         </div>
 
         <div class="cta-container">
-            <a href="https://discord.gg" target="_blank" class="discord-btn">
+            <a href="https://discord.com" target="_blank" class="discord-btn">
                 Wanna join our ranked tournaments? Join our crew using the discord link below
             </a>
         </div>
@@ -278,7 +277,7 @@
                 <div>Points</div>
             </div>
             <div id="leaderboard-content">
-                <!-- Loaded via Script below -->
+                <!-- Loaded safely via script event below -->
             </div>
         </div>
 
@@ -297,7 +296,6 @@
     </div>
 
     <script>
-        // Default Discord blue icon placeholder used for empty fields
         const defaultAvatar = "https://discordapp.com";
 
         const crewData = {
@@ -316,7 +314,13 @@
 
         function renderLeaderboard(region) {
             const container = document.getElementById('leaderboard-content');
-            if(!container) return;
+            if (!container) return;
             container.innerHTML = '';
 
             if (crewData[region].length === 0) {
+                container.innerHTML = '<div class="empty-message">Global rankings are coming soon! Standings haven\'t been announced yet.</div>';
+                return;
+            }
+
+            crewData[region].forEach(player => {
+const row = document.createElement('div');row.className = 'player-row';const profileLink = https://discord.com{player.discordId};row.innerHTML = <div class="rank ${player.rankClass}">${player.rankText}</div>  <img class="avatar-img" src="${player.avatarUrl}" alt="${player.name}"> <div class="name"> <a href="${profileLink}" target="_blank" title="View Discord Profile">${player.name}</a> </div> </div> <div class="win-rate">${player.winRate}</div> <div class="points">${player.points} pts</div>;container.appendChild(row);});}function handleTabClick(buttonId, region) {document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));document.getElementById(buttonId).classList.add('active');renderLeaderboard(region);}// Attach strict browser-safe click events once DOM content finishes renderingdocument.addEventListener('DOMContentLoaded', () => {document.getElementById('tab-india').addEventListener('click', () => handleTabClick('tab-india', 'india'));document.getElementById('tab-oce').addEventListener('click', () => handleTabClick('tab-oce', 'oce'));document.getElementById('tab-global').addEventListener('click', () => handleTabClick('tab-global', 'global'));// Render India layout directly as base initialization templaterenderLeaderboard('india');});

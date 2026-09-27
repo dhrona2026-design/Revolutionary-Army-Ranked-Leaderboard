@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blox Fruits Crew Leaderboard</title>
+    <title>Revolutionary Army Leaderboard</title>
     <style>
         :root {
             --bg-color: #0f172a;
@@ -87,7 +87,6 @@
             color: #fff;
         }
 
-        /* Discord Button Section */
         .cta-container {
             text-align: center;
             margin-bottom: 2rem;
@@ -174,7 +173,6 @@
             color: #f59e0b;
         }
 
-        /* About Us Section styling */
         .about-section {
             background: var(--card-bg);
             border-radius: 12px;
@@ -226,14 +224,13 @@
         </header>
 
         <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('india')">India</button>
-            <button class="tab-btn" onclick="switchTab('oce')">OCE</button>
-            <button class="tab-btn" onclick="switchTab('global')">Global</button>
+            <button class="tab-btn active" id="btn-india">India</button>
+            <button class="tab-btn" id="btn-oce">OCE</button>
+            <button class="tab-btn" id="btn-global">Global</button>
         </div>
 
         <div class="cta-container">
-            <!-- REPLACE THE # WITH YOUR ACTUAL DISCORD INVITE LINK -->
-            <a href="#" target="_blank" class="discord-btn">
+            <a href="https://discord.gg/CGA2D78GGt" target="_blank" class="discord-btn">
                 Wanna join our ranked tournaments? Join our crew using the discord link below
             </a>
         </div>
@@ -246,7 +243,7 @@
                 <div>Points</div>
             </div>
             <div id="leaderboard-content">
-                <!-- Injected via JavaScript -->
+                <!-- Data will load here automatically -->
             </div>
         </div>
 
@@ -275,19 +272,16 @@
                 { name: "Meta Clown", winRate: "100%", points: 100, rankClass: "gold", rankText: "Gold" },
                 { name: "Tropical", winRate: "50%", points: 75, rankClass: "silver", rankText: "Silver" },
                 { name: "Doctor_Who", winRate: "0%", points: 50, rankClass: "bronze", rankText: "Bronze" }
+            ],
+            global: [
+                { name: "Noctix", winRate: "100%", points: 100, rankClass: "gold", rankText: "Gold" },
+                { name: "Meta Clown", winRate: "100%", points: 100, rankClass: "gold", rankText: "Gold" },
+                { name: "Giyu_San", winRate: "50%", points: 75, rankClass: "silver", rankText: "Silver" },
+                { name: "Tropical", winRate: "50%", points: 75, rankClass: "silver", rankText: "Silver" },
+                { name: "MonkeyD Luffy", winRate: "0%", points: 50, rankClass: "bronze", rankText: "Bronze" },
+                { name: "Doctor_Who", winRate: "0%", points: 50, rankClass: "bronze", rankText: "Bronze" }
             ]
         };
-
-        // Combine India and OCE data dynamically to create Global, sorted by points
-        crewData.global = [...crewData.india, ...crewData.oce]
-            .sort((a, b) => b.points - a.points)
-            .map((player, index) => {
-                const dynamicRank = index + 1;
-                if (dynamicRank === 1) { return { ...player, rankText: "Gold", rankClass: "gold", points: 100 }; }
-                if (dynamicRank === 2) { return { ...player, rankText: "Silver", rankClass: "silver", points: 75 }; }
-                if (dynamicRank === 3) { return { ...player, rankText: "Bronze", rankClass: "bronze", points: 50 }; }
-                return { ...player, rankText: `#${dynamicRank}`, rankClass: "other", points: 25 };
-            });
 
         function renderLeaderboard(region) {
             const container = document.getElementById('leaderboard-content');
@@ -306,9 +300,11 @@
             });
         }
 
-        function switchTab(region) {
+        // Setup clear click handlers
+        document.getElementById('btn-india').addEventListener('click', function(e) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            renderLeaderboard(region);
-        }
+            e.target.classList.add('active');
+            renderLeaderboard('india');
+        });
 
+        document.getElementById('btn-oce').addEventListener('click', function(e) {

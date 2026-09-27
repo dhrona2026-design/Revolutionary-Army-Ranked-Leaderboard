@@ -55,7 +55,17 @@
             color: var(--text-muted);
         }
 
-        .tabs {
+        /* Pure CSS Tab System Configuration */
+        .tab-system {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .radio-input {
+            display: none;
+        }
+
+        .tabs-header-bar {
             display: flex;
             justify-content: center;
             gap: 1rem;
@@ -65,9 +75,7 @@
             border-radius: 8px;
         }
 
-        .tab-btn {
-            background: transparent;
-            border: none;
+        .tab-label {
             color: var(--text-muted);
             padding: 0.75rem 1.5rem;
             font-size: 1rem;
@@ -75,16 +83,30 @@
             cursor: pointer;
             border-radius: 6px;
             transition: all 0.3s ease;
+            user-select: none;
         }
 
-        .tab-btn:hover {
+        .tab-label:hover {
             color: #fff;
             background: rgba(255, 255, 255, 0.05);
         }
 
-        .tab-btn.active {
+        /* Show/Hide regions cleanly without active scripting */
+        .region-content {
+            display: none;
+        }
+
+        #radio-india:checked ~ .tabs-header-bar label[for="radio-india"],
+        #radio-oce:checked ~ .tabs-header-bar label[for="radio-oce"],
+        #radio-global:checked ~ .tabs-header-bar label[for="radio-global"] {
             background: var(--accent-color);
             color: #fff;
+        }
+
+        #radio-india:checked ~ .leaderboard-card #content-india,
+        #radio-oce:checked ~ .leaderboard-card #content-oce,
+        #radio-global:checked ~ .leaderboard-card #content-global {
+            display: block;
         }
 
         .cta-container {
@@ -157,7 +179,6 @@
         .rank.gold { color: var(--gold); text-shadow: 0 0 8px rgba(255, 215, 0, 0.3); }
         .rank.silver { color: var(--silver); text-shadow: 0 0 8px rgba(192, 192, 192, 0.3); }
         .rank.bronze { color: var(--bronze); text-shadow: 0 0 8px rgba(205, 127, 50, 0.3); }
-        .rank.other { color: var(--text-muted); }
 
         .player-identity {
             display: flex;
@@ -242,7 +263,7 @@
         }
 
         .empty-message {
-            padding: 2rem;
+            padding: 2.5rem;
             text-align: center;
             color: var(--text-muted);
             font-style: italic;
@@ -251,20 +272,25 @@
 </head>
 <body>
 
-    <div class="container">
+    <div class="container-wrapper" style="width: 100%; max-width: 800px;">
         <header>
             <h1>Crew Leaderboard</h1>
             <p>Blox Fruits Regional & Global Standings</p>
         </header>
 
-        <div class="tabs">
-            <button class="tab-btn active" id="tab-india">India</button>
-            <button class="tab-btn" id="tab-oce">OCE</button>
-            <button class="tab-btn" id="tab-global">Global</button>
+        <!-- Hidden Radio Inputs for Tab Control Logic -->
+        <input type="radio" name="region-tabs" id="radio-india" class="radio-input" checked>
+        <input type="radio" name="region-tabs" id="radio-oce" class="radio-input">
+        <input type="radio" name="region-tabs" id="radio-global" class="radio-input">
+
+        <div class="tabs-header-bar">
+            <label for="radio-india" class="tab-label">India</label>
+            <label for="radio-oce" class="tab-label">OCE</label>
+            <label for="radio-global" class="tab-label">Global</label>
         </div>
 
         <div class="cta-container">
-            <a href="https://discord.com" target="_blank" class="discord-btn">
+            <a href="https://discord.gg" target="_blank" class="discord-btn">
                 Wanna join our ranked tournaments? Join our crew using the discord link below
             </a>
         </div>
@@ -276,51 +302,28 @@
                 <div>Win Rate</div>
                 <div>Points</div>
             </div>
-            <div id="leaderboard-content">
-                <!-- Loaded safely via script event below -->
-            </div>
-        </div>
 
-        <div class="about-section">
-            <h2>About Us</h2>
-            <p>
-                Our crew, the revolutionary army always focused on tournaments, crew wars or PvP based events.. 
-                So we decided to be creative. Introducing a ranked system felt like the best way to make this possible. 
-                To join our war teams, join the discord server and apply for tryouts..
-            </p>
-            <div class="bounty-badge-container">
-                <div class="bounty-badge">Current Bounty: <span>896M</span></div>
-                <div class="bounty-badge">Peak Bounty: <span>984M</span></div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const defaultAvatar = "https://discordapp.com";
-
-        const crewData = {
-            india: [
-                { name: "Noctix", discordId: "123456789012345678", avatarUrl: defaultAvatar, winRate: "100%", points: 100, rankClass: "gold", rankText: "Gold" },
-                { name: "Giyu_San", discordId: "123456789012345678", avatarUrl: defaultAvatar, winRate: "50%", points: 75, rankClass: "silver", rankText: "Silver" },
-                { name: "MonkeyD Luffy", discordId: "123456789012345678", avatarUrl: defaultAvatar, winRate: "0%", points: 50, rankClass: "bronze", rankText: "Bronze" }
-            ],
-            oce: [
-                { name: "Meta Clown", discordId: "123456789012345678", avatarUrl: defaultAvatar, winRate: "100%", points: 100, rankClass: "gold", rankText: "Gold" },
-                { name: "Tropical", discordId: "123456789012345678", avatarUrl: defaultAvatar, winRate: "50%", points: 75, rankClass: "silver", rankText: "Silver" },
-                { name: "Doctor_Who", discordId: "123456789012345678", avatarUrl: defaultAvatar, winRate: "0%", points: 50, rankClass: "bronze", rankText: "Bronze" }
-            ],
-            global: []
-        };
-
-        function renderLeaderboard(region) {
-            const container = document.getElementById('leaderboard-content');
-            if (!container) return;
-            container.innerHTML = '';
-
-            if (crewData[region].length === 0) {
-                container.innerHTML = '<div class="empty-message">Global rankings are coming soon! Standings haven\'t been announced yet.</div>';
-                return;
-            }
-
-            crewData[region].forEach(player => {
-const row = document.createElement('div');row.className = 'player-row';const profileLink = https://discord.com{player.discordId};row.innerHTML = <div class="rank ${player.rankClass}">${player.rankText}</div>  <img class="avatar-img" src="${player.avatarUrl}" alt="${player.name}"> <div class="name"> <a href="${profileLink}" target="_blank" title="View Discord Profile">${player.name}</a> </div> </div> <div class="win-rate">${player.winRate}</div> <div class="points">${player.points} pts</div>;container.appendChild(row);});}function handleTabClick(buttonId, region) {document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));document.getElementById(buttonId).classList.add('active');renderLeaderboard(region);}// Attach strict browser-safe click events once DOM content finishes renderingdocument.addEventListener('DOMContentLoaded', () => {document.getElementById('tab-india').addEventListener('click', () => handleTabClick('tab-india', 'india'));document.getElementById('tab-oce').addEventListener('click', () => handleTabClick('tab-oce', 'oce'));document.getElementById('tab-global').addEventListener('click', () => handleTabClick('tab-global', 'global'));// Render India layout directly as base initialization templaterenderLeaderboard('india');});
+            <!-- INDIA DATA PANEL -->
+            <div id="content-india" class="region-content">
+                <div class="player-row">
+                    <div class="rank gold">Gold</div>
+                    
+                        <img class="avatar-img" src="https://discordapp.com" alt="Noctix">
+                        <div class="name"><a href="https://discord.com" target="_blank">Noctix</a></div>
+                    </div>
+                    <div class="win-rate">100%</div>
+                    <div class="points">100 pts</div>
+                </div>
+                <div class="player-row">
+                    <div class="rank silver">Silver</div>
+                    
+                        <img class="avatar-img" src="https://discordapp.com" alt="Giyu_San">
+                        <div class="name"><a href="https://discord.com" target="_blank">Giyu_San</a></div>
+                    </div>
+                    <div class="win-rate">50%</div>
+                    <div class="points">75 pts</div>
+                </div>
+                <div class="player-row">
+                    <div class="rank bronze">Bronze</div>
+                    
+                        <img class="avatar-img" src="https://discordapp.com" alt="MonkeyD Luffy">

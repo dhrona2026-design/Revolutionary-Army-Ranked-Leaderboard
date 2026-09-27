@@ -121,7 +121,7 @@
 
         .table-header, .player-row {
             display: grid;
-            grid-template-columns: 1.5fr 3fr 2fr 2fr;
+            grid-template-columns: 1.5fr 3.5fr 2fr 2fr;
             padding: 1rem 1.5rem;
             align-items: center;
         }
@@ -159,8 +159,36 @@
         .rank.bronze { color: var(--bronze); text-shadow: 0 0 8px rgba(205, 127, 50, 0.3); }
         .rank.other { color: var(--text-muted); }
 
-        .name {
+        /* Profile Style Configuration */
+        .player-identity {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .avatar-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .player-row:hover .avatar-img {
+            border-color: var(--accent-color);
+        }
+
+        .name a {
             font-weight: 600;
+            color: var(--text-main);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .name a:hover {
+            color: var(--accent-color);
+            text-decoration: underline;
         }
 
         .win-rate {
@@ -269,18 +297,21 @@
     </div>
 
     <script>
+        // Default Discord blue icon placeholder used for empty fields
+        const defaultAvatar = "https://discordapp.com";
+
         const crewData = {
             india: [
-                { name: "Noctix", winRate: "100%", points: 100, rankClass: "gold", rankText: "Gold" },
-                { name: "Giyu_San", winRate: "50%", points: 75, rankClass: "silver", rankText: "Silver" },
-                { name: "MonkeyD Luffy", winRate: "0%", points: 50, rankClass: "bronze", rankText: "Bronze" }
+                { name: "Noctix", discordId: "123456789012345678", avatarUrl: defaultAvatar, winRate: "100%", points: 100, rankClass: "gold", rankText: "Gold" },
+                { name: "Giyu_San", discordId: "123456789012345678", avatarUrl: defaultAvatar, winRate: "50%", points: 75, rankClass: "silver", rankText: "Silver" },
+                { name: "MonkeyD Luffy", discordId: "123456789012345678", avatarUrl: defaultAvatar, winRate: "0%", points: 50, rankClass: "bronze", rankText: "Bronze" }
             ],
             oce: [
-                { name: "Meta Clown", winRate: "100%", points: 100, rankClass: "gold", rankText: "Gold" },
-                { name: "Tropical", winRate: "50%", points: 75, rankClass: "silver", rankText: "Silver" },
-                { name: "Doctor_Who", winRate: "0%", points: 50, rankClass: "bronze", rankText: "Bronze" }
+                { name: "Meta Clown", discordId: "123456789012345678", avatarUrl: defaultAvatar, winRate: "100%", points: 100, rankClass: "gold", rankText: "Gold" },
+                { name: "Tropical", discordId: "123456789012345678", avatarUrl: defaultAvatar, winRate: "50%", points: 75, rankClass: "silver", rankText: "Silver" },
+                { name: "Doctor_Who", discordId: "123456789012345678", avatarUrl: defaultAvatar, winRate: "0%", points: 50, rankClass: "bronze", rankText: "Bronze" }
             ],
-            global: [] // Kept completely empty per instructions
+            global: []
         };
 
         function renderLeaderboard(region) {
@@ -289,31 +320,3 @@
             container.innerHTML = '';
 
             if (crewData[region].length === 0) {
-                container.innerHTML = '<div class="empty-message">Global rankings are coming soon! Standings haven\'t been announced yet.</div>';
-                return;
-            }
-
-            crewData[region].forEach(player => {
-                const row = document.createElement('div');
-                row.className = 'player-row';
-                row.innerHTML = `
-                    <div class="rank ${player.rankClass}">${player.rankText}</div>
-                    <div class="name">${player.name}</div>
-                    <div class="win-rate">${player.winRate}</div>
-                    <div class="points">${player.points} pts</div>
-                `;
-                container.appendChild(row);
-            });
-        }
-
-        function switchTab(event, region) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            renderLeaderboard(region);
-        }
-
-        // Auto load India setup initially
-        renderLeaderboard('india');
-    </script>
-</body>
-</html>

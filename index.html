@@ -14,6 +14,7 @@
             --gold: #ffd700;
             --silver: #c0c0c0;
             --bronze: #cd7f32;
+            --discord-color: #5865f2;
         }
 
         * {
@@ -58,7 +59,7 @@
             display: flex;
             justify-content: center;
             gap: 1rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             background: var(--card-bg);
             padding: 0.5rem;
             border-radius: 8px;
@@ -86,11 +87,37 @@
             color: #fff;
         }
 
+        /* Discord Button Section */
+        .cta-container {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .discord-btn {
+            display: inline-block;
+            background-color: var(--discord-color);
+            color: #fff;
+            text-decoration: none;
+            padding: 0.8rem 1.8rem;
+            font-weight: 700;
+            border-radius: 8px;
+            box-shadow: 0 4px 14px rgba(88, 101, 242, 0.4);
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+        }
+
+        .discord-btn:hover {
+            background-color: #4752c4;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(88, 101, 242, 0.6);
+        }
+
         .leaderboard-card {
             background: var(--card-bg);
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
             overflow: hidden;
+            margin-bottom: 2.5rem;
         }
 
         .table-header, .player-row {
@@ -146,6 +173,48 @@
             font-weight: 700;
             color: #f59e0b;
         }
+
+        /* About Us Section styling */
+        .about-section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .about-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        .about-section p {
+            color: var(--text-muted);
+            line-height: 1.6;
+            font-size: 1.05rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .bounty-badge-container {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .bounty-badge {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .bounty-badge span {
+            color: #ef4444;
+            font-weight: 700;
+        }
     </style>
 </head>
 <body>
@@ -162,6 +231,13 @@
             <button class="tab-btn" onclick="switchTab('global')">Global</button>
         </div>
 
+        <div class="cta-container">
+            <!-- REPLACE THE # WITH YOUR ACTUAL DISCORD INVITE LINK -->
+            <a href="#" target="_blank" class="discord-btn">
+                Wanna join our ranked tournaments? Join our crew using the discord link below
+            </a>
+        </div>
+
         <div class="leaderboard-card">
             <div class="table-header">
                 <div>Rank</div>
@@ -173,10 +249,22 @@
                 <!-- Injected via JavaScript -->
             </div>
         </div>
+
+        <div class="about-section">
+            <h2>About Us</h2>
+            <p>
+                Our crew, the revolutionary army always focused on tournaments, crew wars or PvP based events.. 
+                So we decided to be creative. Introducing a ranked system felt like the best way to make this possible. 
+                To join our war teams, join the discord server and apply for tryouts..
+            </p>
+            <div class="bounty-badge-container">
+                <div class="bounty-badge">Current Bounty: <span>896M</span></div>
+                <div class="bounty-badge">Peak Bounty: <span>984M</span></div>
+            </div>
+        </div>
     </div>
 
     <script>
-        // Data Structures for Regions
         const crewData = {
             india: [
                 { name: "Noctix", winRate: "100%", points: 100, rankClass: "gold", rankText: "Gold" },
@@ -194,15 +282,6 @@
         crewData.global = [...crewData.india, ...crewData.oce]
             .sort((a, b) => b.points - a.points)
             .map((player, index) => {
-                let rankText, rankClass;
-                if (index === 0) { rankText = "Gold"; rankClass = "gold"; player.points = 100; }
-                else if (index === 1) { rankText = "Gold"; rankClass = "gold"; player.points = 100; } // Handle tied 100s
-                else if (index === 2) { rankText = "Silver"; rankClass = "silver"; player.points = 75; }
-                else if (index === 3) { rankText = "Silver"; rankClass = "silver"; player.points = 75; }
-                else if (index === 4) { rankText = "Bronze"; rankClass = "bronze"; player.points = 50; }
-                else { rankText = "Bronze"; rankClass = "bronze"; player.points = 50; }
-                
-                // Recalculate rank properly based on sorted positions if you add more members later:
                 const dynamicRank = index + 1;
                 if (dynamicRank === 1) { return { ...player, rankText: "Gold", rankClass: "gold", points: 100 }; }
                 if (dynamicRank === 2) { return { ...player, rankText: "Silver", rankClass: "silver", points: 75 }; }
@@ -228,16 +307,8 @@
         }
 
         function switchTab(region) {
-            // Update active button state
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
-            
-            // Render the specific region data
             renderLeaderboard(region);
         }
 
-        // Initial Load
-        renderLeaderboard('india');
-    </script>
-</body>
-</html>

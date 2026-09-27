@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blox Fruits Crew Leaderboard</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-color: #3b82f6;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --gold: #ffd700;
+            --silver: #c0c0c0;
+            --bronze: #cd7f32;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-muted);
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            background: var(--card-bg);
+            padding: 0.5rem;
+            border-radius: 8px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn.active {
+            background: var(--accent-color);
+            color: #fff;
+        }
+
+        .leaderboard-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .table-header, .player-row {
+            display: grid;
+            grid-template-columns: 1.5fr 3fr 2fr 2fr;
+            padding: 1rem 1.5rem;
+            align-items: center;
+        }
+
+        .table-header {
+            background: rgba(0, 0, 0, 0.2);
+            font-weight: 600;
+            color: var(--text-muted);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        .player-row {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: background 0.2s ease;
+        }
+
+        .player-row:last-child {
+            border-bottom: none;
+        }
+
+        .player-row:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .rank {
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .rank.gold { color: var(--gold); text-shadow: 0 0 8px rgba(255, 215, 0, 0.3); }
+        .rank.silver { color: var(--silver); text-shadow: 0 0 8px rgba(192, 192, 192, 0.3); }
+        .rank.bronze { color: var(--bronze); text-shadow: 0 0 8px rgba(205, 127, 50, 0.3); }
+        .rank.other { color: var(--text-muted); }
+
+        .name {
+            font-weight: 600;
+        }
+
+        .win-rate {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .points {
+            font-weight: 700;
+            color: #f59e0b;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Crew Leaderboard</h1>
+            <p>Blox Fruits Regional & Global Standings</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('india')">India</button>
+            <button class="tab-btn" onclick="switchTab('oce')">OCE</button>
+            <button class="tab-btn" onclick="switchTab('global')">Global</button>
+        </div>
+
+        <div class="leaderboard-card">
+            <div class="table-header">
+                <div>Rank</div>
+                <div>Player</div>
+                <div>Win Rate</div>
+                <div>Points</div>
+            </div>
+            <div id="leaderboard-content">
+                <!-- Injected via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data Structures for Regions
+        const crewData = {
+            india: [
+                { name: "Noctix", winRate: "100%", points: 100, rankClass: "gold", rankText: "Gold" },
+                { name: "Giyu_San", winRate: "50%", points: 75, rankClass: "silver", rankText: "Silver" },
+                { name: "MonkeyD Luffy", winRate: "0%", points: 50, rankClass: "bronze", rankText: "Bronze" }
+            ],
+            oce: [
+                { name: "Meta Clown", winRate: "100%", points: 100, rankClass: "gold", rankText: "Gold" },
+                { name: "Tropical", winRate: "50%", points: 75, rankClass: "silver", rankText: "Silver" },
+                { name: "Doctor_Who", winRate: "0%", points: 50, rankClass: "bronze", rankText: "Bronze" }
+            ]
+        };
+
+        // Combine India and OCE data dynamically to create Global, sorted by points
+        crewData.global = [...crewData.india, ...crewData.oce]
+            .sort((a, b) => b.points - a.points)
+            .map((player, index) => {
+                let rankText, rankClass;
+                if (index === 0) { rankText = "Gold"; rankClass = "gold"; player.points = 100; }
+                else if (index === 1) { rankText = "Gold"; rankClass = "gold"; player.points = 100; } // Handle tied 100s
+                else if (index === 2) { rankText = "Silver"; rankClass = "silver"; player.points = 75; }
+                else if (index === 3) { rankText = "Silver"; rankClass = "silver"; player.points = 75; }
+                else if (index === 4) { rankText = "Bronze"; rankClass = "bronze"; player.points = 50; }
+                else { rankText = "Bronze"; rankClass = "bronze"; player.points = 50; }
+                
+                // Recalculate rank properly based on sorted positions if you add more members later:
+                const dynamicRank = index + 1;
+                if (dynamicRank === 1) { return { ...player, rankText: "Gold", rankClass: "gold", points: 100 }; }
+                if (dynamicRank === 2) { return { ...player, rankText: "Silver", rankClass: "silver", points: 75 }; }
+                if (dynamicRank === 3) { return { ...player, rankText: "Bronze", rankClass: "bronze", points: 50 }; }
+                return { ...player, rankText: `#${dynamicRank}`, rankClass: "other", points: 25 };
+            });
+
+        function renderLeaderboard(region) {
+            const container = document.getElementById('leaderboard-content');
+            container.innerHTML = '';
+
+            crewData[region].forEach(player => {
+                const row = document.createElement('div');
+                row.className = 'player-row';
+                row.innerHTML = `
+                    <div class="rank ${player.rankClass}">${player.rankText}</div>
+                    <div class="name">${player.name}</div>
+                    <div class="win-rate">${player.winRate}</div>
+                    <div class="points">${player.points} pts</div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function switchTab(region) {
+            // Update active button state
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Render the specific region data
+            renderLeaderboard(region);
+        }
+
+        // Initial Load
+        renderLeaderboard('india');
+    </script>
+</body>
+</html>

@@ -213,6 +213,13 @@
             color: #ef4444;
             font-weight: 700;
         }
+
+        .empty-message {
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -224,13 +231,13 @@
         </header>
 
         <div class="tabs">
-            <button class="tab-btn active" id="btn-india">India</button>
-            <button class="tab-btn" id="btn-oce">OCE</button>
-            <button class="tab-btn" id="btn-global">Global</button>
+            <button class="tab-btn active" onclick="switchTab(event, 'india')">India</button>
+            <button class="tab-btn" onclick="switchTab(event, 'oce')">OCE</button>
+            <button class="tab-btn" onclick="switchTab(event, 'global')">Global</button>
         </div>
 
         <div class="cta-container">
-            <a href="https://discord.gg/CGA2D78GGt" target="_blank" class="discord-btn">
+            <a href="https://discord.gg" target="_blank" class="discord-btn">
                 Wanna join our ranked tournaments? Join our crew using the discord link below
             </a>
         </div>
@@ -243,7 +250,7 @@
                 <div>Points</div>
             </div>
             <div id="leaderboard-content">
-                <!-- Data will load here automatically -->
+                <!-- Loaded via Script below -->
             </div>
         </div>
 
@@ -273,19 +280,18 @@
                 { name: "Tropical", winRate: "50%", points: 75, rankClass: "silver", rankText: "Silver" },
                 { name: "Doctor_Who", winRate: "0%", points: 50, rankClass: "bronze", rankText: "Bronze" }
             ],
-            global: [
-                { name: "Noctix", winRate: "100%", points: 100, rankClass: "gold", rankText: "Gold" },
-                { name: "Meta Clown", winRate: "100%", points: 100, rankClass: "gold", rankText: "Gold" },
-                { name: "Giyu_San", winRate: "50%", points: 75, rankClass: "silver", rankText: "Silver" },
-                { name: "Tropical", winRate: "50%", points: 75, rankClass: "silver", rankText: "Silver" },
-                { name: "MonkeyD Luffy", winRate: "0%", points: 50, rankClass: "bronze", rankText: "Bronze" },
-                { name: "Doctor_Who", winRate: "0%", points: 50, rankClass: "bronze", rankText: "Bronze" }
-            ]
+            global: [] // Kept completely empty per instructions
         };
 
         function renderLeaderboard(region) {
             const container = document.getElementById('leaderboard-content');
+            if(!container) return;
             container.innerHTML = '';
+
+            if (crewData[region].length === 0) {
+                container.innerHTML = '<div class="empty-message">Global rankings are coming soon! Standings haven\'t been announced yet.</div>';
+                return;
+            }
 
             crewData[region].forEach(player => {
                 const row = document.createElement('div');
@@ -300,11 +306,14 @@
             });
         }
 
-        // Setup clear click handlers
-        document.getElementById('btn-india').addEventListener('click', function(e) {
+        function switchTab(event, region) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            e.target.classList.add('active');
-            renderLeaderboard('india');
-        });
+            event.target.classList.add('active');
+            renderLeaderboard(region);
+        }
 
-        document.getElementById('btn-oce').addEventListener('click', function(e) {
+        // Auto load India setup initially
+        renderLeaderboard('india');
+    </script>
+</body>
+</html>
